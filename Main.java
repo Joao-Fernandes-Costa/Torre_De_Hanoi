@@ -1,6 +1,7 @@
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
+
 /**
  * Classe principal para executar o algoritmo da Torre de Hanói para várias
  * instâncias e medir seu desempenho.
