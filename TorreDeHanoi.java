@@ -1,50 +1,56 @@
-import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Classe que implementa a lógica recursiva para resolver o problema da Torre de Hanói.
- * Utiliza BigInteger para contar os movimentos, permitindo calcular para um número
- * grande de discos sem estourar o limite de tipos de dados primitivos.
- */
 public class TorreDeHanoi {
+    private static long contadorMovimentos;
+    public static void main(String[] args) {
+        int[] instancias = {1, 10, 20, 30, 40, 41};
 
-    private BigInteger movimentos = BigInteger.ZERO;
+        System.out.println("Iniciando a execução do algoritmo Torre de Hanói...");
+        System.out.println("-------------------------------------------------");
 
-    /**
-     * Método público que inicia a resolução do problema e retorna o total de movimentos.
-     *
-     * @param nDiscos Número de discos a serem movidos.
-     * @param origem  Pino de origem (ex: 'A').
-     * @param destino Pino de destino (ex: 'C').
-     * @param aux     Pino auxiliar (ex: 'B').
-     * @return O número total de movimentos realizados.
-     */
-    public BigInteger resolver(int nDiscos, char origem, char destino, char aux) {
-        // Zera o contador a cada nova chamada principal
-        this.movimentos = BigInteger.ZERO;
-        moverDiscos(nDiscos, origem, destino, aux);
-        return this.movimentos;
+        for (int n : instancias) {
+            System.out.printf("Executando para a instância com %d discos...\n", n);
+            contadorMovimentos = 0;
+            long tempoInicial = System.nanoTime();
+            resolverHanoi(n, 'A', 'C', 'B');
+            long tempoFinal = System.nanoTime();
+            long duracaoNano = tempoFinal - tempoInicial;
+            String tempoFormatado = formatarDuracao(duracaoNano);
+            System.out.printf("-> Instância com %d discos concluída!\n", n);
+            System.out.printf("   - Quantidade de movimentos: %,d\n", contadorMovimentos);
+            System.out.printf("   - Tempo de execução: %s\n\n", tempoFormatado);
+        }
+        
+        System.out.println("-------------------------------------------------");
+        System.out.println("Todos os testes foram concluídos.");
     }
 
     /**
-     * Método recursivo privado que executa a lógica de movimentação dos discos.
-     *
-     * @param n       Número de discos no pino atual.
-     * @param origem  Pino de onde o disco será movido.
-     * @param destino Pino para onde o disco será movido.
-     * @param aux     Pino de apoio.
+     * @param n
+     * @param origem
+     * @param destino
+     * @param auxiliar
      */
-    private void moverDiscos(int n, char origem, char destino, char aux) {
-        if (n > 0) {
-            // 1. Mover n-1 discos da origem para o pino auxiliar, usando o destino como apoio.
-            moverDiscos(n - 1, origem, aux, destino);
-
-            // 2. Mover o disco n (o maior) da origem para o destino.
-            // Em uma implementação visual, aqui seria exibido o movimento.
-            // Para este problema, apenas contamos o movimento.
-            this.movimentos = this.movimentos.add(BigInteger.ONE);
-
-            // 3. Mover os n-1 discos do pino auxiliar para o pino de destino, usando a origem como apoio.
-            moverDiscos(n - 1, aux, destino, origem);
+    public static void resolverHanoi(int n, char origem, char destino, char auxiliar) {
+        if (n == 1) {
+            contadorMovimentos++;
+            return;
         }
+        resolverHanoi(n - 1, origem, auxiliar, destino);
+        contadorMovimentos++;
+        resolverHanoi(n - 1, auxiliar, destino, origem);
+    }
+
+    /**
+     * @param nanosegundos
+     * @return
+     */
+    public static String formatarDuracao(long nanosegundos) {
+        long totalMillis = TimeUnit.NANOSECONDS.toMillis(nanosegundos);
+        long horas = TimeUnit.MILLISECONDS.toHours(totalMillis);
+        long minutos = TimeUnit.MILLISECONDS.toMinutes(totalMillis) % 60;
+        long segundos = TimeUnit.MILLISECONDS.toSeconds(totalMillis) % 60;
+        long millis = totalMillis % 1000;
+        return String.format("%02d:%02d:%02d:%03d", horas, minutos, segundos, millis);
     }
 }
